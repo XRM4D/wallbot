@@ -1,6 +1,8 @@
 import random
 import logging
 import requests
+from PIL import Image
+import os
 
 from config import UNSPLASH_TOKEN
 
@@ -15,6 +17,45 @@ class UnsplashLoader:
             logger.info(f"Selected query: {query}")
             return query
         
+    def __convert_to_16_9(self, path: str) -> None:
+        logger.info(f"Converting image to 16:9 format: {path}")
+        try:
+            with Image.open(path) as img:
+                width, height = img.size
+                target_width = width
+                target_height = int(width * 9 / 16)
+
+                if target_height > height:
+                    target_height = height
+                    target_width = int(height * 16 / 9)
+
+                left = (width - target_width) / 2
+                top = (height - target_height) / 2
+                right = (width + target_width) / 2
+                bottom = (height + target_height) / 2
+
+                cropped_img = img.crop((left, top, right, bottom))
+                cropped_img.save(path)
+                logger.info("Image successfully converted to 16:9 format.")
+        except Exception as e:
+            logger.error(f"Failed to convert image to 16:9 format: {e}")
+            raise
+
+    def __ensure_file_size(self, path: str, max_size_mb: int = 10) -> None:
+        logger.info(f"Checking if image size exceeds {max_size_mb} MB...")
+        try:
+            while os.path.getsize(path) > max_size_mb * 1024 * 1024:
+                logger.info(f"Image size exceeds {max_size_mb} MB. Cropping...")
+                with Image.open(path) as img:
+                    width, height = img.size
+                    cropped_img = img.crop((0, 0, width - 100, height - 100))  # Crop 100px from each side
+                    cropped_img.save(path)
+                    logger.info("Image cropped to reduce size.")
+            logger.info("Image size is within the acceptable limit.")
+        except Exception as e:
+            logger.error(f"Failed to ensure image size: {e}")
+            raise
+
     def __download_image(self, url: str, path: str = "./tmp/photo.png") -> None:
         logger.info(f"Downloading image from URL: {url}")
         with open(path, "wb") as file:
@@ -23,6 +64,8 @@ class UnsplashLoader:
                 img_data = response.content
                 file.write(img_data)
                 logger.info("Image downloaded successfully.")
+                self.__convert_to_16_9(path)
+                self.__ensure_file_size(path)
             else:
                 logger.error(f"Failed to download image. Status code: {response.status_code}")
                 raise Exception("Failed to download image")

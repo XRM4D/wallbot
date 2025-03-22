@@ -29,7 +29,7 @@ class UnsplashLoader:
     
     def get_random_image(self) -> bool:
         query = self.__get_random_query()
-        url = f"https://api.unsplash.com/photos/random?query={query}&client_id={UNSPLASH_TOKEN}"
+        url = f"https://api.unsplash.com/photos/random?query={query}&orientation=landscape&client_id={UNSPLASH_TOKEN}"
         response = requests.get(url).json()
         
         try:

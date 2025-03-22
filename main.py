@@ -13,8 +13,7 @@ async def main():
     publisher = TelegramPublisher()
 
     scheduler = AsyncIOScheduler()
-    # trigger = CronTrigger(hour='0-22', minute=0)  # Every hour except between 23:00 and 8:00
-    trigger = CronTrigger(minute="*")
+    trigger = CronTrigger(hour='0-22', minute=0)  # Every hour except between 23:00 and 8:00
     scheduler.add_job(publisher.publish, trigger)
     scheduler.start()
 

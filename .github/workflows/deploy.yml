@@ -48,11 +48,9 @@ jobs:
               docker stop wallbot || true
               docker rm wallbot || true
               docker rmi wallbot || true
-    
-              # Загрузка Docker-образа из архива
+
               docker load -i /tmp/wallbot.tar
     
-              # Запуск нового контейнера
               docker run -d --name wallbot  wallbot:latest
 
               rm /tmp/wallbot.tar

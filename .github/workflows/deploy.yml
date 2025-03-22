@@ -45,6 +45,8 @@ jobs:
             port: 22
             script: |
               
+              rm -rf /opt/hostedtoolcache
+            
               docker stop wallbot || true
               docker rm wallbot || true
               docker rmi wallbot || true

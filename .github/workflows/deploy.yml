@@ -51,7 +51,11 @@ jobs:
 
               docker load -i /tmp/wallbot.tar
     
-              docker run -d --name wallbot  wallbot:latest
+              docker run -d --name wallbot \
+               -e BOT_TOKEN=${{ secrets.BOT_TOKEN}} \
+               -e UNSPLASH_TOKEN=${{ secrets.UNSPLASH_TOKEN}} \
+               -e CHANNEL_ID=${{ secrets.CHANNEL_ID}} \
+               wallbot:latest
 
               rm /tmp/wallbot.tar
             

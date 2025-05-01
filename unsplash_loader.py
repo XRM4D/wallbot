@@ -64,7 +64,6 @@ class UnsplashLoader:
                 img_data = response.content
                 file.write(img_data)
                 logger.info("Image downloaded successfully.")
-                self.__convert_to_16_9(path)
                 self.__ensure_file_size(path)
             else:
                 logger.error(f"Failed to download image. Status code: {response.status_code}")
